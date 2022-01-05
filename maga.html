@@ -75,6 +75,9 @@ var GetFile = function () {
         PageIndex = JSON.parse(xhr.responseText)
         GetPho(Iu+PageIndex['data'][PageCur])
       }
+      if (xhr.status == 302) {
+        GetFile(xhr.responseURL)
+      }
     }
   }
   xhr.send()
@@ -91,6 +94,9 @@ var GetPho = function (url) {
         eval('blob'+r+' = xhr.response')
         const urr = URL.createObjectURL(eval('blob'+r))
         AddList(urr)
+      }
+      if (xhr.status == 302) {
+        GetFile(xhr.responseURL)
       }
     }
   }
