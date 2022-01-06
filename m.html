@@ -98,7 +98,7 @@ var GetFile = function (path, sta) {
           PageIndex = JSON.parse(xhr.responseText)
           //console.log(PageIndex)
           GetP(PageIndex['files'][PageCur]['url'])
-          n = data + sta
+          n = path + sta
           localforage.setItem(n, PageIndex)
         }
       }
