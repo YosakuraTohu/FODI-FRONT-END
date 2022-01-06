@@ -72,7 +72,7 @@ var GetF = function (data, sta) {
   localforage.getItem(n).then(function (v) {
     PageIndex = v
     GetP(PageIndex['files'][PageCur]['url'])
-  }.catch(function (err){
+  }).catch(function (err){
     GetFile(data, sta)
   })
 }
@@ -98,6 +98,8 @@ var GetFile = function (path, sta) {
           PageIndex = JSON.parse(xhr.responseText)
           //console.log(PageIndex)
           GetP(PageIndex['files'][PageCur]['url'])
+          n = data + sta
+          localforage.setItem(n, PageIndex)
         }
       }
     }
