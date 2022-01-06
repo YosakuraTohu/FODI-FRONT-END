@@ -67,6 +67,16 @@ async function ACRun(func) {
   return func()
 }
 
+var GetF = function (data, sta) {
+  n = data + sta
+  localforage.getItem(n).then(function (v) {
+    PageIndex = v
+    GetP(PageIndex['files'][PageCur]['url'])
+  }.catch(function (err){
+    GetFile(data, sta)
+  })
+}
+
 var GetFile = function (path, sta) {
   const xhr = new XMLHttpRequest()
   root = path
