@@ -181,6 +181,20 @@
       }
     }
 
+    var setImg = function (e) {
+        if ((con.offsetHeight / img.height) > (con.offsetWidth / img.width)) {
+            img.style.width = con.offsetWidth + 'px';
+            img.style.height = 'auto';
+        }
+        else {
+            img.style.height = con.offsetHeight + 'px';
+            img.style.width = 'auto';
+        }
+
+        img.style.paddingTop = (con.offsetHeight - img.height) / 2 + 'px';
+        img.style.paddingLeft = (con.offsetWidth - img.width) / 2 + 'px';
+    }
+
     function getQueryVariable(variable) {
       var query = window.location.search.substring(1);
       var vars = query.split('&');
