@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+
+	<title>Ink Story</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+	<div id="outerContainer">
+		<div id="save-load">
+			<select id="save-slot">
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+			</select> &nbsp;
+			<a onclick='javascript:inkgame.saveGame()'>Save</a> &nbsp;
+			<a onclick='javascript:inkgame.loadGame()'>Load</a> &nbsp;
+			<a onclick='javascript:inkgame.restart()'>Restart</a>
+			<span id="back_button"> &nbsp; <a onclick='javascript:inkgame.back()'>Back</a></span>
+		</div>
+		<div id="written-in-ink"><a href="https://www.inklestudios.com/ink" target="_blank">INK</a></div>
+		<div id="story" class="container">
+			<div class="header">
+				<h1 id="title">Ink Story</h1>
+				<h2 id="byline"></h2>
+			</div>
+		</div>
+	</div>
+
+	<script src="ink.js"></script>
+	<script src="story.js"></script>
+	<script src="main.js"></script>
+</body>
+</html>
