@@ -91,7 +91,7 @@
     function getBooksChaps() {
         return {
             data: {},
-            async Init(d) { this.env_bookId = d; let k = await axios.get("/book/bid/" + d + ".json"); this.data = k.data }
+            async Init(d) { this.env_bookId = d; let k = await axios.get("/book/kid/" + d + ".json"); this.data = k.data }
         }
     }
 
