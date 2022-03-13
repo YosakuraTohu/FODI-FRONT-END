@@ -1,0 +1,24 @@
+{
+    "name": "生活太过无趣",
+    "intro": "测试中…",
+    "bookImg": null,
+    "bookId": 1001,
+    "chapList": [
+        {
+            "name": "简单介绍",
+            "chapId": 10001
+        },
+        {
+            "name": "序章",
+            "chapId": 10002
+        },
+        {
+            "name": "第一章 姐姐来查房了",
+            "chapId": 10003
+        },
+        {
+            "name": "第二章 起名困难户",
+            "chapId": 10004
+        }
+    ]
+}
