@@ -100,8 +100,8 @@
     function posts() {
         return {
             data: {},
-            async backChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i > 0) {r = d[i-1]; this.env_chap = r; let k = await axios.get("/book/cid/" + r + ".json"); this.data = k.data}};screen(0,0) },
-            async nextChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i+1 < d.length) {r = d[i+1]; this.env_chap = r; let k = await axios.get("/book/cid/" + r + ".json"); this.data = k.data}};screen(0,0) },
+            async backChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i > 0) {r = d[i-1]; this.env_chap = r; let k = await axios.get("/book/cid/" + r + ".json"); this.data = k.data}};scroll(0, 0) },
+            async nextChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i+1 < d.length) {r = d[i+1]; this.env_chap = r; let k = await axios.get("/book/cid/" + r + ".json"); this.data = k.data}};scroll(0, 0) },
             async Init(d) { this.env_chap = d; let k = await axios.get("/book/cid/" + d + ".json"); this.data = k.data }
         }
     }
