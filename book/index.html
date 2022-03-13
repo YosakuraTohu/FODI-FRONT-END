@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-hans">
+<head>
+    <meta charset="utf-8">
+    <title>Yosakura的随记小屋~</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css"> -->
+    <link rel="stylesheet" href="./normalize.css">
+    <link rel="stylesheet" href="./skeleton.css">
+    <script src="//cdn.jsdelivr.net/npm/alpinejs@3.9.1/dist/cdn.min.js" defer></script>
+    <script src="//cdn.jsdelivr.net/npm/axios@0.26.0/dist/axios.min.js"></script>
+</head>
+<body x-data="startup" x-init="body_init">
+
+    <div class="container">
+        <div class="row" x-data="dropdown" x-show="env_root === 'welcome' && WelcomeShow">
+            <div class="one-half column" style="margin-top: 10%;">
+                <h1 @click="close" x-text="env_text[0]"></h1>
+                <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="env_root = 'booklist'" x-text="env_text[5]"></button>
+                <p x-text="Intro"></p>
+            </div>
+        </div>
+        <div class="row" x-data="getBooksMune" x-init="Init" x-show="env_root === 'welcome' || env_root === 'booklist'">
+            <h4 x-text="env_root === 'welcome' ? env_text[4] : env_text[5]"></h4>
+            <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="env_root = 'welcome'"
+                x-show="env_root === 'booklist'" x-text="env_text[1]"></button><br>
+            <template x-for="item in data">
+                <div class="three columns" x-data="{t: item}">
+                    <p x-text="t.name" style="font-size: large; font-weight: 900; margin: 0;"></p>
+                    <p x-text="'简介：'+t.intro" style="font-size: smaller; font-weight: 100; margin: 0; color: gray;"></p>
+                    <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="$dispatch('slcbc', slc_book(t.bookId))" x-text="env_text[2]"></button>
+                </div>
+            </template>
+        </div>
+        <div class="row" x-data="getBooksChaps" @slcbc.window="Init($event.detail); env_chaps = []" x-show="env_root === 'bookmenu'">
+            <h4 x-text="data.name" style="font-weight: 900"></h4>
+            <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="env_root = 'booklist'"
+                x-text="env_text[3]"></button>
+            <template x-for="item in data.chapList">
+                <div x-data="{t: item}">
+                    <button class="one-half column" style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="$dispatch('strel', slc_chap(t.chapId))" x-text="t.name" x-init ="env_chaps.push(t.chapId)"></button>
+                </div>
+            </template>
+        </div>
+        <div class="row" x-data="posts" @strel.window="Init($event.detail)" x-show="env_root === 'reading'">
+            <h4 x-text="data.title" style="font-weight: 900"></h4>
+            <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="env_root = 'bookmenu'; data = {}" x-text="env_text[3]"></button><br>
+            <button style="width: 40%; font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="backChap(env_chaps, env_chap)" x-text="env_text[6]"></button>
+            <button style="width: 40%; font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="nextChap(env_chaps, env_chap)" x-text="env_text[7]"></button>
+            <template x-for="item in data.text">
+                <div>
+                    <p x-text="item" style="font-size: large; font-weight: 900; margin: 0;"></p>
+                    <br>
+                </div>
+            </template>
+        </div>
+    </div>
+</body>
+
+
+<script>
+    const mBookMune = getBooksMune();
+
+    function startup() {
+        return {
+            env_root: '',
+            env_bookId: 0,
+            env_chap: 0,
+            env_chaps: [],
+            env_text: ['主页', '返回主页', '阅读…', '返回', '书籍列表：', '继续阅读……', '上一章', '下一章'],
+            body_init() { this.env_root = 'welcome' },
+            slc_book(d) { this.env_root = 'bookmenu'; return d },
+            slc_chap(d) { this.env_root = 'reading'; return d }
+        }
+    }
+
+    function dropdown() {
+        return {
+            WelcomeShow: true,
+            Intro: '网站正在测试中，若有bug说一下谢谢~',
+        }
+    }
+
+    function getBooksMune() {
+        return {
+            data: [],
+            async Init() { let k = await axios.get("/book/menu.json"); this.data = k.data.bookList; }
+        };
+    }
+
+    function getBooksChaps() {
+        return {
+            data: {},
+            async Init(d) { this.env_bookId = d; let k = await axios.get("/book/bid/" + d + ".json"); this.data = k.data }
+        }
+    }
+
+    function posts() {
+        return {
+            data: {},
+            async backChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i > 0) {r = d[i-1]; this.env_chap = r; let k = await axios.get("/book/cid/" + r + ".json"); this.data = k.data}} },
+            async nextChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i+1 < d.length) {r = d[i+1]; this.env_chap = r; let k = await axios.get("/book/cid/" + r + ".json"); this.data = k.data}} },
+            async Init(d) { this.env_chap = d; let k = await axios.get("/book/cid/" + d + ".json"); this.data = k.data }
+        }
+    }
+</script>
+
+</html>
