@@ -53,6 +53,8 @@
                     <br>
                 </div>
             </template>
+            <button style="width: 40%; font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="backChap(env_chaps, env_chap)" x-text="env_text[6]"></button>
+            <button style="width: 40%; font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="nextChap(env_chaps, env_chap)" x-text="env_text[7]"></button>
         </div>
     </div>
 </body>
@@ -98,8 +100,8 @@
     function posts() {
         return {
             data: {},
-            async backChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i > 0) {r = d[i-1]; this.env_chap = r; let k = await axios.get("/book/cid/" + r + ".json"); this.data = k.data}} },
-            async nextChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i+1 < d.length) {r = d[i+1]; this.env_chap = r; let k = await axios.get("/book/cid/" + r + ".json"); this.data = k.data}} },
+            async backChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i > 0) {r = d[i-1]; this.env_chap = r; let k = await axios.get("/book/cid/" + r + ".json"); this.data = k.data}};screen(0,0) },
+            async nextChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i+1 < d.length) {r = d[i+1]; this.env_chap = r; let k = await axios.get("/book/cid/" + r + ".json"); this.data = k.data}};screen(0,0) },
             async Init(d) { this.env_chap = d; let k = await axios.get("/book/cid/" + d + ".json"); this.data = k.data }
         }
     }
