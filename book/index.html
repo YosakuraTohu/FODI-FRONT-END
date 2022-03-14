@@ -90,7 +90,7 @@
     function getBooksChaps() {
         return {
             data: {},
-            async Init(d) { let k = await axios.get("/book/kid/" + d + ".json"); for (let i = 0; i < k.data.chapList.length; i++) { this.env_chaps.push(k.data.chapList[i].chap) }; this.data = k.data }
+            async Init(d) { let k = await axios.get("/book/kid/" + d + ".json"); for (let i = 0; i < k.data.chapList.length; i++) { this.env_chaps.push(k.data.chapList[i].chapId) }; this.data = k.data }
         }
     }
 
