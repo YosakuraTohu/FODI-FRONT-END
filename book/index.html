@@ -11,7 +11,6 @@
     <script src="./axios.min.js"></script>
 </head>
 <body x-data="startup" x-init="body_init">
-
     <div class="container">
         <div class="row" x-data="dropdown" x-show="env_root === 'welcome' && WelcomeShow">
             <div class="one-half column" style="margin-top: 10%;">
@@ -28,23 +27,23 @@
                 <div class="three columns" x-data="{t: item}">
                     <p x-text="t.name" style="font-size: large; font-weight: 900; margin: 0;"></p>
                     <p x-text="'简介：'+t.intro" style="font-size: smaller; font-weight: 100; margin: 0; color: gray;"></p>
-                    <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="$dispatch('slcbc', slc_book(t.bookId))" x-text="env_text[2]"></button>
+                    <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="env_root = 'bookmenu'; env_bookId = t.bookId" x-text="env_text[2]"></button>
                 </div>
             </template>
         </div>
-        <div class="row" x-data="getBooksChaps" @slcbc.window="Init($event.detail); env_chaps = []" x-show="env_root === 'bookmenu'">
+        <div class="row" x-data="getBooksChaps" x-init="$watch('env_bookId', x => { Init(x) } )" x-show="env_root === 'bookmenu'">
             <h4 x-text="data.name" style="font-weight: 900"></h4>
             <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="env_root = 'booklist'"
                 x-text="env_text[3]"></button>
             <template x-for="item in data.chapList">
                 <div x-data="{t: item}">
-                    <button class="one-half column" style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="$dispatch('strel', slc_chap(t.chapId))" x-text="t.name" x-init ="env_chaps.push(t.chapId)"></button>
+                    <button class="one-half column" style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="env_root = 'reading' ;env_chap = t.chapId" x-text="t.name"></button>
                 </div>
             </template>
         </div>
-        <div class="row" x-data="posts" @strel.window="Init($event.detail)" x-show="env_root === 'reading'">
+        <div class="row" x-data="posts" x-init="$watch('env_chap', x => { Init(x) } )"   x-show="env_root === 'reading'">
             <h4 x-text="data.title" style="font-weight: 900"></h4>
-            <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="env_root = 'bookmenu'; data = {}" x-text="env_text[3]"></button><br>
+            <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="env_root = 'bookmenu'; env_chap = 0" x-text="env_text[3]"></button><br>
             <button style="width: 40%; font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="backChap(env_chaps, env_chap)" x-text="env_text[6]"></button>
             <button style="width: 40%; font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="nextChap(env_chaps, env_chap)" x-text="env_text[7]"></button>
             <template x-for="item in data.text">
@@ -71,8 +70,6 @@
             env_chaps: [],
             env_text: ['主页', '返回主页', '阅读…', '返回', '书籍列表：', '继续阅读……', '上一章', '下一章'],
             body_init() { this.env_root = 'welcome' },
-            slc_book(d) { this.env_root = 'bookmenu'; return d },
-            slc_chap(d) { this.env_root = 'reading'; return d }
         }
     }
 
@@ -93,16 +90,16 @@
     function getBooksChaps() {
         return {
             data: {},
-            async Init(d) { this.env_bookId = d; let k = await axios.get("/book/kid/" + d + ".json"); this.data = k.data }
+            async Init(d) { let k = await axios.get("/book/kid/" + d + ".json"); for (let i = 0; i < k.data.chapList.length; i++) { this.env_chaps.push(k.data.chapList[i].chap) }; this.data = k.data }
         }
     }
 
     function posts() {
         return {
             data: {},
-            async backChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i > 0) {r = d[i-1]; this.env_chap = r; let k = await axios.get("/book/cid/" + r + ".json"); this.data = k.data}};scroll(0, 0) },
-            async nextChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i+1 < d.length) {r = d[i+1]; this.env_chap = r; let k = await axios.get("/book/cid/" + r + ".json"); this.data = k.data}};scroll(0, 0) },
-            async Init(d) { this.env_chap = d; let k = await axios.get("/book/cid/" + d + ".json"); this.data = k.data }
+            async backChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i > 0) {r = d[i-1]; this.env_chap = r;}} scroll(0, 0) },
+            async nextChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i+1 < d.length) {r = d[i+1]; this.env_chap = r;}} scroll(0, 0) },
+            async Init(d) { if (d !== 0 ) { let k = await axios.get("/book/cid/" + d + ".json"); this.data = k.data } else { this.data = {} }}
         }
     }
 </script>
