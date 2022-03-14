@@ -9,41 +9,41 @@
     <link rel="stylesheet" href="./skeleton.css">
     <script src="./alpine.min.js" defer></script>
     <script src="./axios.min.js"></script>
+    <script src="./cookie.js"></script>
 </head>
 <body x-data="startup" x-init="body_init">
     <div class="container">
-        <div class="row" x-data="dropdown" x-show="env_root === 'welcome' && WelcomeShow">
+        <div class="row" x-data="dropdown" x-show="env_root === 'welcome'">
             <div class="one-half column" style="margin-top: 10%;">
-                <h1 @click="close" x-text="env_text[0]"></h1>
-                <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="env_root = 'booklist'" x-text="env_text[5]"></button>
+                <h1 x-text="env_text[0]"></h1>
+                <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="setRoot('booklist')" x-text="env_text[5]"></button>
                 <p x-text="Intro"></p>
             </div>
         </div>
         <div class="row" x-data="getBooksMune" x-init="Init" x-show="env_root === 'welcome' || env_root === 'booklist'">
             <h4 x-text="env_root === 'welcome' ? env_text[4] : env_text[5]"></h4>
-            <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="env_root = 'welcome'"
-                x-show="env_root === 'booklist'" x-text="env_text[1]"></button><br>
+            <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="setRoot('welcome')" x-show="env_root === 'booklist'" x-text="env_text[1]"></button><br>
             <template x-for="item in data">
                 <div class="three columns" x-data="{t: item}">
                     <p x-text="t.name" style="font-size: large; font-weight: 900; margin: 0;"></p>
                     <p x-text="'简介：'+t.intro" style="font-size: smaller; font-weight: 100; margin: 0; color: gray;"></p>
-                    <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="env_root = 'bookmenu'; env_bookId = t.bookId" x-text="env_text[2]"></button>
+                    <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="setRoot('bookmenu'); env_bookId = t.bookId" x-text="env_text[2]"></button>
                 </div>
             </template>
         </div>
         <div class="row" x-data="getBooksChaps" x-init="$watch('env_bookId', x => { Init(x) } )" x-show="env_root === 'bookmenu'">
             <h4 x-text="data.name" style="font-weight: 900"></h4>
-            <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="env_root = 'booklist'"
+            <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="setRoot('booklist')"
                 x-text="env_text[3]"></button>
             <template x-for="item in data.chapList">
                 <div x-data="{t: item}">
-                    <button class="one-half column" style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="env_root = 'reading' ;env_chap = t.chapId" x-text="t.name"></button>
+                    <button class="one-half column" style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="setRoot('reading') ;env_chap = t.chapId" x-text="t.name"></button>
                 </div>
             </template>
         </div>
-        <div class="row" x-data="posts" x-init="$watch('env_chap', x => { Init(x) } )"   x-show="env_root === 'reading'">
+        <div class="row" x-data="posts" x-init="$watch('env_chap', x => { Init(x) } )" x-show="env_root === 'reading'">
             <h4 x-text="data.title" style="font-weight: 900"></h4>
-            <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="env_root = 'bookmenu'; env_chap = 0" x-text="env_text[3]"></button><br>
+            <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="setRoot('bookmenu'); env_chap = 0" x-text="env_text[3]"></button><br>
             <button style="width: 40%; font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="backChap(env_chaps, env_chap)" x-text="env_text[6]"></button>
             <button style="width: 40%; font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="nextChap(env_chaps, env_chap)" x-text="env_text[7]"></button>
             <template x-for="item in data.text">
@@ -60,22 +60,20 @@
 
 
 <script>
-    const mBookMune = getBooksMune();
-
     function startup() {
         return {
-            env_root: '',
+            env_root: 'welcome',
             env_bookId: 0,
             env_chap: 0,
             env_chaps: [],
             env_text: ['主页', '返回主页', '阅读…', '返回', '书籍列表：', '继续阅读……', '上一章', '下一章'],
-            body_init() { this.env_root = 'welcome' },
+            async setRoot(d) { this.env_root = d; setCookie('e_root', d) },
+            async body_init() { let r = await getCookie('e_root'); let b = await getCookie('e_bookid'); let c = await getCookie('e_chap'); if (b !== null && (r === 'bookmenu' || r === 'reading')) { this.env_bookId = Number(b) } if (c !== null && r === 'reading') { this.env_chap = Number(c) } if (r !== null) { this.env_root = r } },
         }
     }
 
     function dropdown() {
         return {
-            WelcomeShow: true,
             Intro: '网站正在测试中，若有bug说一下谢谢~',
         }
     }
@@ -90,7 +88,7 @@
     function getBooksChaps() {
         return {
             data: {},
-            async Init(d) { let k = await axios.get("/book/kid/" + d + ".json"); for (let i = 0; i < k.data.chapList.length; i++) { this.env_chaps.push(k.data.chapList[i].chapId) }; this.data = k.data }
+            async Init(d) { setCookie('e_bookid', d); let k = await axios.get("/book/kid/" + d + ".json"); for (let i = 0; i < k.data.chapList.length; i++) { this.env_chaps.push(k.data.chapList[i].chapId) }; this.data = k.data }
         }
     }
 
@@ -99,7 +97,7 @@
             data: {},
             async backChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i > 0) {r = d[i-1]; this.env_chap = r;}} scroll(0, 0) },
             async nextChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i+1 < d.length) {r = d[i+1]; this.env_chap = r;}} scroll(0, 0) },
-            async Init(d) { if (d !== 0 ) { let k = await axios.get("/book/cid/" + d + ".json"); this.data = k.data } else { this.data = {} }}
+            async Init(d) { setCookie('e_chap', d); if (d !== 0 ) { let k = await axios.get("/book/cid/" + d + ".json"); this.data = k.data } else { this.data = {} }}
         }
     }
 </script>
