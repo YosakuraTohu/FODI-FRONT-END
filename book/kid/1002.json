@@ -1,0 +1,12 @@
+{
+    "name": "小H文章",
+    "intro": "各种网站收录的文章",
+    "bookImg": null,
+    "bookId": 1002,
+    "chapList": [
+        {
+            "name": "关于我变成萝莉还被女友雷普的那件事",
+            "chapId": 20001
+        }
+    ]
+}

@@ -6,6 +6,12 @@
             "intro": "若是这样，那还有什么了说的呢…（测试预览版）",
             "bookImg": null,
             "bookId": 1001
+        },
+        {
+            "name": "小H文合集~",
+            "intro": "各种网站收录的文章",
+            "bookImg": null,
+            "bookId": 1002
         }
     ]
 }
