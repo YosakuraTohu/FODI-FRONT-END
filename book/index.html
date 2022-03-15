@@ -37,8 +37,8 @@
             <button class="k-button" @click="setRoot('booklist')"
                 x-text="env_text[3]"></button>
             <template x-for="item in data.chapList">
-                <div x-data="{t: item}">
-                    <button class="one-half column" class="k-button" @click="setRoot('reading') ;env_chap = t.chapId" x-text="t.name"></button>
+                <div>
+                    <button class="one-half column" class="k-button" @click="setRoot('reading') ;env_chap = item.chapId" x-text="item.name"></button>
                 </div>
             </template>
         </div>
