@@ -13,16 +13,16 @@
 </head>
 <body x-data="startup" x-init="body_init">
     <div class="container">
-        <div class="row" x-data="dropdown" x-show="env_root === 'welcome'">
+        <div class="row" x-data="dropdown" x-transition x-show="env_root === 'welcome'">
             <div class="one-half column" style="margin-top: 10%;">
                 <h1 x-text="env_text[0]"></h1>
                 <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="setRoot('booklist')" x-text="env_text[5]"></button>
                 <p x-text="Intro"></p>
             </div>
         </div>
-        <div class="row" x-data="getBooksMune" x-init="Init" x-show="env_root === 'welcome' || env_root === 'booklist'">
+        <div class="row" x-data="getBooksMune" x-init="Init" x-transition x-show="env_root === 'welcome' || env_root === 'booklist'">
             <h4 x-text="env_root === 'welcome' ? env_text[4] : env_text[5]"></h4>
-            <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="setRoot('welcome')" x-show="env_root === 'booklist'" x-text="env_text[1]"></button><br>
+            <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="setRoot('welcome')" x-transition x-show="env_root === 'booklist'" x-text="env_text[1]"></button><br>
             <template x-for="item in data">
                 <div class="three columns" x-data="{t: item}">
                     <p x-text="t.name" style="font-size: large; font-weight: 900; margin: 0;"></p>
@@ -31,7 +31,7 @@
                 </div>
             </template>
         </div>
-        <div class="row" x-data="getBooksChaps" x-init="$watch('env_bookId', x => { Init(x) } )" x-show="env_root === 'bookmenu'">
+        <div class="row" x-data="getBooksChaps" x-init="$watch('env_bookId', x => { Init(x) } )" x-transition x-show="env_root === 'bookmenu'">
             <h4 x-text="data.name" style="font-weight: 900"></h4>
             <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="setRoot('booklist')"
                 x-text="env_text[3]"></button>
@@ -41,7 +41,7 @@
                 </div>
             </template>
         </div>
-        <div class="row" x-data="posts" x-init="$watch('env_chap', x => { Init(x) } )" x-show="env_root === 'reading'">
+        <div class="row" x-data="posts" x-init="$watch('env_chap', x => { Init(x) } )" x-transition x-show="env_root === 'reading'">
             <h4 x-text="data.title" style="font-weight: 900"></h4>
             <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="setRoot('bookmenu'); env_chap = 0" x-text="env_text[3]"></button><br>
             <button style="width: 40%; font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="backChap(env_chaps, env_chap)" x-text="env_text[6]"></button>
