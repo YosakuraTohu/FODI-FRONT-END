@@ -7,6 +7,7 @@
     <link href="//fonts.font.im/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="./normalize.css">
     <link rel="stylesheet" href="./skeleton.css">
+    <link rel="stylesheet" href="./style.css">
     <script src="./alpine.min.js" defer></script>
     <script src="./axios.min.js"></script>
     <script src="./cookie.js"></script>
@@ -16,44 +17,44 @@
         <div class="row" x-data="dropdown" x-transition.scale.50 x-transition.duration.500ms x-show="env_root === 'welcome'">
             <div class="one-half column" style="margin-top: 10%;">
                 <h1 x-text="env_text[0]"></h1>
-                <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="setRoot('booklist')" x-text="env_text[5]"></button>
+                <button class="k-button" @click="setRoot('booklist')" x-text="env_text[5]"></button>
                 <p x-text="Intro"></p>
             </div>
         </div>
         <div class="row" x-data="getBooksMune" x-init="Init" x-transition.scale.50 x-transition.duration.500ms x-show="env_root === 'welcome' || env_root === 'booklist'">
             <h4 x-text="env_root === 'welcome' ? env_text[4] : env_text[5]"></h4>
-            <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="setRoot('welcome')" x-transition.scale.50 x-transition.duration.500ms x-show="env_root === 'booklist'" x-text="env_text[1]"></button><br>
+            <button class="k-button" @click="setRoot('welcome')" x-transition.scale.50 x-transition.duration.500ms x-show="env_root === 'booklist'" x-text="env_text[1]"></button><br>
             <template x-for="item in data">
                 <div class="three columns" x-data="{t: item}">
                     <p x-text="t.name" style="font-size: large; font-weight: 900; margin: 0;"></p>
                     <p x-text="'简介：'+t.intro" style="font-size: smaller; font-weight: 100; margin: 0; color: gray;"></p>
-                    <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="setRoot('bookmenu'); env_bookId = t.bookId" x-text="env_text[2]"></button>
+                    <button class="k-button" @click="setRoot('bookmenu'); env_bookId = t.bookId" x-text="env_text[2]"></button>
                 </div>
             </template>
         </div>
         <div class="row" x-data="getBooksChaps" x-init="$watch('env_bookId', x => { Init(x) } )" x-transition.scale.50 x-transition.duration.500ms x-show="env_root === 'bookmenu'">
             <h4 x-text="data.name" style="font-weight: 900"></h4>
-            <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="setRoot('booklist')"
+            <button class="k-button" @click="setRoot('booklist')"
                 x-text="env_text[3]"></button>
             <template x-for="item in data.chapList">
                 <div x-data="{t: item}">
-                    <button class="one-half column" style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="setRoot('reading') ;env_chap = t.chapId" x-text="t.name"></button>
+                    <button class="one-half column" class="k-button" @click="setRoot('reading') ;env_chap = t.chapId" x-text="t.name"></button>
                 </div>
             </template>
         </div>
         <div class="row" x-data="posts" x-init="$watch('env_chap', x => { Init(x) } )" x-transition.scale.50 x-transition.duration.500ms x-show="env_root === 'reading'">
             <h4 x-text="data.title" style="font-weight: 900"></h4>
-            <button style="font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="setRoot('bookmenu'); env_chap = 0" x-text="env_text[3]"></button><br>
-            <button style="width: 40%; font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="backChap(env_chaps, env_chap)" x-text="env_text[6]"></button>
-            <button style="width: 40%; font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="nextChap(env_chaps, env_chap)" x-text="env_text[7]"></button>
+            <button class="k-button" @click="setRoot('bookmenu'); env_chap = 0" x-text="env_text[3]"></button><br>
+            <button class="c-button" @click="backChap(env_chaps, env_chap)" x-text="env_text[6]"></button>
+            <button class="c-button" @click="nextChap(env_chaps, env_chap)" x-text="env_text[7]"></button>
             <template x-for="item in data.text">
                 <div>
                     <p x-text="item" style="font-size: large; font-weight: 900; margin: 0;"></p>
                     <br>
                 </div>
             </template>
-            <button style="width: 40%; font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="backChap(env_chaps, env_chap)" x-text="env_text[6]"></button>
-            <button style="width: 40%; font-size: smaller; font-weight: 500; margin-bottom: 15;" @click="nextChap(env_chaps, env_chap)" x-text="env_text[7]"></button>
+            <button class="c-button" @click="backChap(env_chaps, env_chap)" x-text="env_text[6]"></button>
+            <button class="c-button" @click="nextChap(env_chaps, env_chap)" x-text="env_text[7]"></button>
         </div>
     </div>
 </body>
