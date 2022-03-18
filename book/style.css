@@ -1,3 +1,14 @@
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #15141a;
+        color: #fbfbfe;
+    }
+
+    button {
+        color: #fbfbfe;
+    }
+}
+
 .c-button {
     width: 40%;
     font-size: smaller;
