@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="./normalize.css">
     <link rel="stylesheet" href="./skeleton.css">
     <link rel="stylesheet" href="./style.css">
+    <script src="https://cdn.bootcdn.net/ajax/libs/crypto-js/4.1.1/crypto-js.js"></script>
     <script src="./alpine.min.js" defer></script>
     <script src="./axios.min.js"></script>
     <script src="./cookie.js"></script>
@@ -82,14 +83,14 @@
     function getBooksMune() {
         return {
             data: [],
-            async Init() { let k = await axios.get("/book/menu.json"); this.data = k.data.bookList; }
+            async Init() { let k = await getApiData("menu.json"); this.data = k.bookList; }
         };
     }
 
     function getBooksChaps() {
         return {
             data: {},
-            async Init(d) { setCookie('e_bookid', d); let k = await axios.get("/book/kid/" + d + ".json"); for (let i = 0; i < k.data.chapList.length; i++) { this.env_chaps.push(k.data.chapList[i].chapId) }; this.data = k.data }
+            async Init(d) { setCookie('e_bookid', d); let k = await getApiData("books/" + d + ".json"); for (let i = 0; i < k.chapList.length; i++) { this.env_chaps.push(k.chapList[i].chapId) }; this.data = k }
         }
     }
 
@@ -98,8 +99,49 @@
             data: {},
             async backChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i > 0) {r = d[i-1]; this.env_chap = r;}} scroll(0, 0) },
             async nextChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i+1 < d.length) {r = d[i+1]; this.env_chap = r;}} scroll(0, 0) },
-            async Init(d) { setCookie('e_chap', d); if (d !== 0 ) { let k = await axios.get("/book/cid/" + d + ".json"); this.data = k.data } else { this.data = {} }}
+            async Init(d) { setCookie('e_chap', d); if (d !== 0 ) { let k = await getApiData("chaps/" + d + ".json"); this.data = k } else { this.data = {} }}
         }
+    }
+    //-------------------
+    async function getKey(id) {
+        const k = await axios.get("/book/key.json");
+        const keys = decrypt(k.data.data, 'ndsjajjsjs');
+        for (let i = 0; i < keys.k.length; i++) {
+            const e = keys.k[i];
+            if (e.id === id) {
+                return e.key;
+                break;
+            }
+        }
+    }
+
+    function decrypt(content, key) {
+        return JSON.parse(CryptoJS.AES.decrypt(
+            content,
+            key,
+            {
+                iv: CryptoJS.enc.Utf8.parse(key),
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.ZeroPadding,
+            }
+        ).toString(CryptoJS.enc.Utf8))
+    }
+
+    async function getApiData(adr) {
+        let o = {};
+        const u = await axios({
+            method: 'get',
+            baseURL: 'https://api.yosakura.tk/OVIndex/fodi/?fapi=/',
+            url: adr,
+        });
+        if (u.data.url !== null) {
+            const data = await axios.get(u.data.url);
+            o = JSON.parse(decrypt(data.data.data, await getKey(data.data.id)));
+        }
+        else {
+            o = {};
+        }
+        return o;
     }
 </script>
 
