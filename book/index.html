@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="./skeleton.css">
     <link rel="stylesheet" href="./style.css">
     <script src="https://cdn.bootcdn.net/ajax/libs/crypto-js/4.1.1/crypto-js.js"></script>
+    <script src="./localforage.min.js"></script>
     <script src="./alpine.min.js" defer></script>
     <script src="./axios.min.js"></script>
     <script src="./cookie.js"></script>
@@ -83,14 +84,14 @@
     function getBooksMune() {
         return {
             data: [],
-            async Init() { let k = await getApiData("menu.json"); this.data = k.bookList; }
+            async Init() { let k = await getData("menu.json"); this.data = k.bookList; }
         };
     }
 
     function getBooksChaps() {
         return {
             data: {},
-            async Init(d) { setCookie('e_bookid', d); let k = await getApiData("books/" + d + ".json"); for (let i = 0; i < k.chapList.length; i++) { this.env_chaps.push(k.chapList[i].chapId) }; this.data = k }
+            async Init(d) { setCookie('e_bookid', d); let k = await getData("books/" + d + ".json"); for (let i = 0; i < k.chapList.length; i++) { this.env_chaps.push(k.chapList[i].chapId) }; this.data = k }
         }
     }
 
@@ -99,7 +100,7 @@
             data: {},
             async backChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i > 0) {r = d[i-1]; this.env_chap = r;}} scroll(0, 0) },
             async nextChap(d, c) { for (let i = 0; i < d.length; i++) {if (d[i] === c && i+1 < d.length) {r = d[i+1]; this.env_chap = r;}} scroll(0, 0) },
-            async Init(d) { setCookie('e_chap', d); if (d !== 0 ) { let k = await getApiData("chaps/" + d + ".json"); this.data = k } else { this.data = {} }}
+            async Init(d) { setCookie('e_chap', d); if (d !== 0 ) { let k = await getData("chaps/" + d + ".json"); this.data = k } else { this.data = {} }}
         }
     }
     //-------------------
@@ -142,6 +143,18 @@
             o = {};
         }
         return o;
+    }
+
+    async function getData(adr) {
+        const o = await localforage.getItem(adr);
+        if (o === null) {
+            const v = await getApiData(adr);
+            await localforage.setItem(adr, v);
+            return v;
+        }
+        else {
+            return o;
+        }
     }
 </script>
 
